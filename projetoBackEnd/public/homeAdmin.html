@@ -1,0 +1,115 @@
+<html lang="EN">
+
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" type="text/css" href="/assets/css/cadastro.css" media="screen"/>
+
+
+    <title>Cadastro Turma</title>
+</head>
+
+<body>
+<header>
+    <img id="logo" src="/Vector%201DesenhoBonito.png" width="61" alt="desenho bonitinho">
+    <h2>Cadastrar Turma</h2>
+</header>
+<div id="main">
+    <section>
+        <article id="formAluno">
+            <div class="formRow">
+                <label>ID</label>
+                <input type="text" id="idTurma" placeholder="Digite o ID da turma">
+            </div>
+            <div class="formRow">
+                <label>Disciplina</label>
+                <input type="text" id="idDisciplina" placeholder="Digite o ID da disciplina">
+            </div>
+            <div class="formRow">
+                <label>Professor</label>
+                <input type="text" id="idProfessor" placeholder="Digite o ID do professor">
+            </div>
+            <div class="formRow">
+                <label>Turno</label>
+                <input type="text" id="turnoProfessor" placeholder="Informe o turno do professor">
+            </div>
+            <div class="formRow">
+                <button onclick="salvarTurma()">Salvar</button>
+            </div>
+        </article>
+    </section>
+    <section id="lista">
+        <button onclick="carregarDadosTurma()">Carregar dados</button>
+        <table id="registros">
+            <tr>
+                <th>ID</th>
+                <th>Disciplina</th>
+                <th>Professor</th>
+                <th>Turno</th>
+            </tr>
+        </table>
+    </section>
+</div>
+<script>
+    function carregarDadosTurma() {
+        const myRequest = new Request('http://localhost:3000/turmas');
+        fetch(myRequest)
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else {
+                    throw new Error('Ops! Houve um erro em nosso servidor.');
+                }
+            })
+            .then(response => {
+                recuperarDadosTurma(response);
+            }).catch(error => {
+            console.error(error);
+        });
+    }
+
+    function recuperarDadosTurma(obj) {
+        const tabela = document.getElementById('registros');
+        tabela.innerHTML = ''
+            + '<th scope="col">ID</th>'
+            + '<th scope="col">Disciplina</th>'
+            + '<th scope="col">Professor</th>'
+            + '<th scope="col">Turno</th>';
+        for (let index = 0; index < obj.length; index++) {
+            const element = obj[index];
+            const tr = document.createElement('tr');
+            tr.innerHTML =
+                '<td>' + element.idTurma + '</td>'
+                + '<td>' + element.idDisciplina + '</td>'
+                + '<td>' + element.idProfessor + '</td>'
+                + '<td>' + element.turnoProfessor + '</td>';
+            tabela.appendChild(tr);
+        }
+
+    }
+
+    function salvarTurma() {
+
+        const turma = {
+            idTurma: document.getElementById('idTurma').value,
+            idDisciplina: document.getElementById('idDisciplina').value,
+            idProfessor: document.getElementById('idProfessor').value,
+            turno: document.getElementById('turnoProfessor').value
+        }
+
+        fetch('http://localhost:3000/turmas', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(turma),
+        }).then((response) => response.text())
+            .then((responseText) => {
+                alert('Resposta back-end: ' + responseText);
+            });
+    }
+</script>
+</body>
+
+</html>
